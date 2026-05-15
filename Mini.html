@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --accent: #e74c3c;
+            --success: #2ecc71;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7f1 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #555;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .form-section, .preview-section {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            height: 80vh;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--secondary);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+        }
+
+        .btn-accent:hover {
+            background: #c0392b;
+        }
+
+        .resume-header {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--light);
+        }
+
+        .header-content {
+            flex: 1;
+        }
+
+        .resume-name {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .resume-title {
+            color: var(--secondary);
+            margin: 5px 0 10px;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .contact-item i {
+            color: var(--secondary);
+        }
+
+        .resume-section {
+            margin-bottom: 20px;
+        }
+
+        .resume-section h3 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .profile-summary {
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .timeline-item {
+            margin-bottom: 15px;
+            padding-left: 15px;
+            border-left: 2px solid var(--secondary);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+        }
+
+        .item-title {
+            font-weight: 600;
+        }
+
+        .item-date {
+            color: var(--secondary);
+        }
+
+        .item-subtitle {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+
+        .item-description {
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .skill {
+            background: var(--light);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        .resume-footer {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+
+        .footer-item i {
+            color: var(--secondary);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .preview-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .profile-img-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .change-img-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .file-input-container {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-container input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--success);
+            color: white;
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .form-section, .preview-section {
+                height: auto;
+            }
+            
+            .resume-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .contact-info {
+                justify-content: center;
+            }
+            
+            .row {
+                flex-direction: column;
+            }
+        }
+
+        /* PDF specific styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .main-content, .form-section, .preview-controls, header {
+                display: none;
+            }
+            
+            .preview-section {
+                width: 100%;
+                height: auto;
+                padding: 0;
+                box-shadow: none;
+                border-radius: 0;
+                margin: 0;
+            }
+            
+            #resumeContent {
+                width: 100%;
+                margin: 0;
+                padding: 20px;
+            }
+            
+            .resume-footer {
+                margin-top: 30px;
+                position: relative;
+                bottom: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Professional Resume Builder</h1>
+            <p>Create your resume in real-time with this interactive builder</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Editor Section -->
+            <section class="form-section">
+                <h2 class="section-title"><i class="fas fa-edit"></i> Edit Resume</h2>
+                
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="Enter your full name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="jobTitle">Job Title</label>
+                    <input type="text" id="jobTitle" placeholder="e.g. Software Engineer">
+                </div>
+                
+                <div class="row">
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" placeholder="(123) 456-7890">
+                    </div>
+                    <div class="form-group">
+                        <label for="district">District</label>
+                        <input type="text" id="district" placeholder="Your district">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="your.email@example.com">
+                </div>
+                
+                <div class="row">
+                    <div class="form-group">
+                        <label for="linkedin">LinkedIn</label>
+                        <input type="text" id="linkedin" placeholder="linkedin.com/in/username">
+                    </div>
+                    <div class="form-group">
+                        <label for="github">GitHub</label>
+                        <input type="text" id="github" placeholder="github.com/username">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="profileImg">Profile Image</label>
+                    <div class="file-input-container">
+                        <button class="btn" id="uploadImgBtn">
+                            <i class="fas fa-upload"></i> Choose Image
+                        </button>
+                        <input type="file" id="profileImg" accept="image/*">
+                    </div>
+                    <small class="file-name" id="fileName">No file chosen</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="summary">Summary</label>
+                    <textarea id="summary" rows="4" placeholder="Briefly describe your professional background..."></textarea>
+                </div>
+                
+                <h2 class="section-title"><i class="fas fa-graduation-cap"></i> Education</h2>
+                
+                <div class="form-group">
+                    <label for="education">Education Details</label>
+                    <textarea id="education" rows="3" placeholder="Degree, Institution, Year"></textarea>
+                </div>
+                
+                <h2 class="section-title"><i class="fas fa-briefcase"></i> Work Experience</h2>
+                
+                <div class="form-group">
+                    <label for="experience">Work Experience</label>
+                    <textarea id="experience" rows="3" placeholder="Position, Company, Duration, Description"></textarea>
+                </div>
+                
+                <h2 class="section-title"><i class="fas fa-code"></i> Skills</h2>
+                
+                <div class="form-group">
+                    <label for="skills">Your Skills (comma separated)</label>
+                    <input type="text" id="skills" placeholder="e.g. JavaScript, HTML, CSS">
+                </div>
+                
+                <h2 class="section-title"><i class="fas fa-medal"></i> Certifications</h2>
+                
+                <div class="form-group">
+                    <label for="certifications">Certifications</label>
+                    <textarea id="certifications" rows="2" placeholder="List your certifications"></textarea>
+                </div>
+                
+                <h2 class="section-title"><i class="fas fa-project-diagram"></i> Projects</h2>
+                
+                <div class="form-group">
+                    <label for="projects">Projects</label>
+                    <textarea id="projects" rows="2" placeholder="Describe your projects"></textarea>
+                </div>
+                
+                <div class="actions">
+                    <button class="btn" id="updateBtn">
+                        <i class="fas fa-sync"></i> Update Preview
+                    </button>
+                    <button class="btn btn-accent" id="resetBtn">
+                        <i class="fas fa-redo"></i> Reset Form
+                    </button>
+                </div>
+            </section>
+            
+            <!-- Preview Section -->
+            <section class="preview-section">
+                <div id="resumeContent">
+                    <div class="resume-header">
+                        <div class="profile-img-container">
+                            <img src="https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg" 
+                                 alt="Profile" class="profile-img" id="resumeImg">
+                            <button class="change-img-btn" id="changeImgBtn">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <div class="header-content">
+                            <h1 class="resume-name" id="resumeName">Your Name</h1>
+                            <p class="resume-title" id="resumeTitle">Professional Title</p>
+                            <div class="contact-info">
+                                <div class="contact-item">
+                                    <i class="fas fa-phone"></i>
+                                    <span id="resumePhone">(123) 456-7890</span>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span id="resumeDistrict">District</span>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <span id="resumeEmail">email@example.com</span>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fab fa-linkedin"></i>
+                                    <span id="resumeLinkedin">linkedin.com</span>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fab fa-github"></i>
+                                    <span id="resumeGithub">github.com</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="resume-section">
+                        <h3><i class="fas fa-user"></i> Summary</h3>
+                        <div class="section-content">
+                            <p class="profile-summary" id="resumeSummary">
+                                Enter your Summary in the editor.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="resume-section">
+                        <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+                        <div class="section-content" id="resumeEducation">
+                            <div class="timeline-item">
+                                <div class="item-header">
+                                    <span class="item-title">Institution Name</span>
+                                    <span class="item-date">Year - Year</span>
+                                </div>
+                                <div class="item-subtitle">Degree/Certificate</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="resume-section">
+                        <h3><i class="fas fa-briefcase"></i> Work Experience</h3>
+                        <div class="section-content" id="resumeExperience">
+                            <div class="timeline-item">
+                                <div class="item-header">
+                                    <span class="item-title">Position Title</span>
+                                    <span class="item-date">Year - Year</span>
+                                </div>
+                                <div class="item-subtitle">Company Name</div>
+                                <p class="item-description">Description of your responsibilities and achievements.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="resume-section">
+                        <h3><i class="fas fa-code"></i> Skills</h3>
+                        <div class="section-content">
+                            <div class="skills" id="resumeSkills">
+                                <span class="skill">Add your skills</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="resume-section">
+                        <h3><i class="fas fa-medal"></i> Certifications</h3>
+                        <div class="section-content" id="resumeCertifications">
+                            <p>Certification 1</p>
+                            <p>Certification 2</p>
+                        </div>
+                    </div>
+                    
+                    <div class="resume-section">
+                        <h3><i class="fas fa-project-diagram"></i> Projects</h3>
+                        <div class="section-content" id="resumeProjects">
+                            <p>Project 1 - Description</p>
+                            <p>Project 2 - Description</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer moved inside resumeContent to be included in PDF -->
+                    <div class="resume-footer">
+                        <div class="footer-content">
+                            <div class="footer-item">
+                                <i class="fas fa-envelope"></i>
+                                <span id="footerEmail">email@example.com</span>
+                            </div>
+                            <div class="footer-item">
+                                <i class="fab fa-github"></i>
+                                <span id="footerGithub">github.com</span>
+                            </div>
+                            <div class="footer-item">
+                                <i class="fas fa-phone"></i>
+                                <span id="footerPhone">(123) 456-7890</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="preview-controls">
+                    <button class="btn" id="downloadBtn">
+                        <i class="fas fa-download"></i> Download as PDF
+                    </button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast">Resume updated successfully!</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get elements
+            const updateBtn = document.getElementById('updateBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const changeImgBtn = document.getElementById('changeImgBtn');
+            const uploadImgBtn = document.getElementById('uploadImgBtn');
+            const profileImgInput = document.getElementById('profileImg');
+            const toast = document.getElementById('toast');
+            
+            // Add event listeners
+            updateBtn.addEventListener('click', updateResume);
+            resetBtn.addEventListener('click', resetForm);
+            downloadBtn.addEventListener('click', downloadPDF);
+            changeImgBtn.addEventListener('click', () => profileImgInput.click());
+            profileImgInput.addEventListener('change', handleImageUpload);
+            
+            // Function to show toast notification
+            function showToast(message) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+            
+            // Function to handle image upload
+            function handleImageUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                // Update file name display
+                document.getElementById('fileName').textContent = file.name;
+                
+                // Validate file type
+                if (!file.type.match('image.*')) {
+                    showToast('Please select an image file (jpg, png, etc.)');
+                    return;
+                }
+                
+                // Read and display the image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('resumeImg').src = e.target.result;
+                    showToast('Profile image updated!');
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            // Function to update resume preview
+            function updateResume() {
+                // Update basic info
+                document.getElementById('resumeName').textContent = 
+                    document.getElementById('fullName').value || 'Your Name';
+                
+                document.getElementById('resumeTitle').textContent = 
+                    document.getElementById('jobTitle').value || 'Professional Title';
+                
+                document.getElementById('resumePhone').textContent = 
+                    document.getElementById('phone').value || '(123) 456-7890';
+                
+                document.getElementById('resumeDistrict').textContent = 
+                    document.getElementById('district').value || 'District';
+                
+                document.getElementById('resumeEmail').textContent = 
+                    document.getElementById('email').value || 'email@example.com';
+                
+                document.getElementById('resumeLinkedin').textContent = 
+                    document.getElementById('linkedin').value || 'linkedin.com';
+                
+                document.getElementById('resumeGithub').textContent = 
+                    document.getElementById('github').value || 'github.com';
+                
+                // Update summary
+                document.getElementById('resumeSummary').textContent = 
+                    document.getElementById('summary').value || 
+                    'Enter your professional summary in the editor.';
+                
+                // Update education
+                const education = document.getElementById('education').value;
+                if (education) {
+                    const parts = education.split(',');
+                    document.getElementById('resumeEducation').innerHTML = `
+                        <div class="timeline-item">
+                            <div class="item-header">
+                                <span class="item-title">${parts[0] || 'Institution'}</span>
+                                <span class="item-date">${parts[2] || 'Year'}</span>
+                            </div>
+                            <div class="item-subtitle">${parts[1] || 'Degree'}</div>
+                        </div>
+                    `;
+                }
+                
+                // Update work experience
+                const experience = document.getElementById('experience').value;
+                if (experience) {
+                    const parts = experience.split(',');
+                    document.getElementById('resumeExperience').innerHTML = `
+                        <div class="timeline-item">
+                            <div class="item-header">
+                                <span class="item-title">${parts[0] || 'Position'}</span>
+                                <span class="item-date">${parts[2] || 'Duration'}</span>
+                            </div>
+                            <div class="item-subtitle">${parts[1] || 'Company'}</div>
+                            <p class="item-description">${parts[3] || 'Description of your responsibilities and achievements.'}</p>
+                        </div>
+                    `;
+                }
+                
+                // Update skills
+                const skillsInput = document.getElementById('skills').value;
+                const skillsContainer = document.getElementById('resumeSkills');
+                
+                if (skillsInput) {
+                    const skills = skillsInput.split(',').map(skill => skill.trim());
+                    skillsContainer.innerHTML = '';
+                    
+                    skills.forEach(skill => {
+                        if (skill) {
+                            const skillElement = document.createElement('span');
+                            skillElement.className = 'skill';
+                            skillElement.textContent = skill;
+                            skillsContainer.appendChild(skillElement);
+                        }
+                    });
+                } else {
+                    skillsContainer.innerHTML = '<span class="skill">Add your skills</span>';
+                }
+                
+                // Update certifications
+                const certifications = document.getElementById('certifications').value;
+                if (certifications) {
+                    document.getElementById('resumeCertifications').innerHTML = 
+                        certifications.split('\n').map(cert => `<p>${cert}</p>`).join('');
+                }
+                
+                // Update projects
+                const projects = document.getElementById('projects').value;
+                if (projects) {
+                    document.getElementById('resumeProjects').innerHTML = 
+                        projects.split('\n').map(proj => `<p>${proj}</p>`).join('');
+                }
+                
+                // Update footer
+                document.getElementById('footerEmail').textContent = 
+                    document.getElementById('email').value || 'email@example.com';
+                
+                document.getElementById('footerGithub').textContent = 
+                    document.getElementById('github').value || 'github.com';
+                
+                document.getElementById('footerPhone').textContent = 
+                    document.getElementById('phone').value || '(123) 456-7890';
+                
+                showToast('Resume preview updated!');
+            }
+            
+            // Function to reset form
+            function resetForm() {
+                if (confirm('Are you sure you want to reset the form? All data will be lost.')) {
+                    document.querySelectorAll('input, textarea').forEach(input => {
+                        if (input.type !== 'file') {
+                            input.value = '';
+                        }
+                    });
+                    // Reset profile image
+                    document.getElementById('resumeImg').src = 'https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg';
+                    document.getElementById('fileName').textContent = 'No file chosen';
+                    updateResume();
+                    showToast('Form has been reset');
+                }
+            }
+            
+            // Function to download as PDF
+            function downloadPDF() {
+                const element = document.getElementById('resumeContent');
+                const opt = {
+                    margin: [10, 10, 20, 10], // top, left, bottom, right (in mm)
+                    filename: 'my_resume.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { 
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                        scrollY: 0
+                    },
+                    jsPDF: { 
+                        unit: 'mm', 
+                        format: 'a4', 
+                        orientation: 'portrait'
+                    },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                };
+                
+                // Show download message
+                showToast('Generating PDF...');
+                
+                // Generate PDF
+                setTimeout(() => {
+                    html2pdf().set(opt).from(element).save();
+                    showToast('PDF downloaded successfully!');
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>
